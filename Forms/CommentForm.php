@@ -9,21 +9,25 @@
  * the file license.txt that was distributed with this source code.
  */
 
-namespace App\CommentsModule;
+namespace App\CommentsModule\Forms;
 
 use Venne;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class Module extends \Venne\Module\BaseModule
+class CommentForm extends \Venne\Forms\EntityForm
 {
 
 
-	/** @var string */
-	protected $description = "Content submodule for comments";
+	public function startup()
+	{
+		parent::startup();
 
-	/** @var string */
-	protected $version = "2.0";
+		$this->addGroup();
+		$this->addText("author", "Name")->addRule(self::FILLED, "Enter name");
+		$this->addTextArea("text", "Comment")->addRule(self::FILLED, "Enter comment");
+	}
+
 
 }
