@@ -17,10 +17,13 @@ use Venne\Application\UI\Control;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class CommentsControl extends Control {
+class CommentsControl extends Control
+{
 
 	/** @var \App\CommentsModule\Entities\CommentsEntity */
 	protected $item;
+
+
 
 	public function startup()
 	{
@@ -28,10 +31,12 @@ class CommentsControl extends Control {
 
 		$repository = $this->presenter->context->comments->commentsRepository;
 
-		$this->item = $item = $repository->findOneBy(array("page" => $this->presenter->page->page->id));
-		if ($item) {
-			$this->template->show = true;
-			$this->template->items = $item->items;
+		if ($this->presenter instanceof \App\CoreModule\Presenters\PagePresenter) {
+			$this->item = $item = $repository->findOneBy(array("page" => $this->presenter->page->page->id));
+			if ($item) {
+				$this->template->show = true;
+				$this->template->items = $item->items;
+			}
 		}
 	}
 
@@ -46,7 +51,8 @@ class CommentsControl extends Control {
 		$form = $this->presenter->context->comments->createCommentForm();
 		$form->setEntity($entity);
 		$form->addSubmit("submit", "Send");
-		$form->onSuccess[] = function($form) use ($repository){
+		$form->onSuccess[] = function($form) use ($repository)
+		{
 			$repository->save($form->entity);
 			$form->presenter->flashMessage("Comment has been saved", "success");
 			$form->presenter->redirect("this");

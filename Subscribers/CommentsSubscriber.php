@@ -112,9 +112,9 @@ class CommentsSubscriber implements EventSubscriber
 		/** @var $presenter \Nette\Application\UI\Presenter */
 		$presenter = $this->application->getPresenter();
 
-		$component = new \Venne\Elements\CommentsControl($presenter, "contentExtension_comments");
+		$component = new \Venne\Elements\CommentsControl();
 
-		$presenter->addComponent($component,"contentExtension_comments" );
+		$presenter->addComponent($component,"contentExtension_comments");
 
 		$component->render();
 	}
