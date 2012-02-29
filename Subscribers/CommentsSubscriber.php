@@ -33,7 +33,7 @@ class CommentsSubscriber implements EventSubscriber
 	 * @param Container|\SystemContainer $context
 	 * @param \Nette\Application\Application
 	 */
-	public function __construct(Container $context,\Nette\Application\Application $application)
+	public function __construct(Container $context, \Nette\Application\Application $application)
 	{
 		$this->repository = $context->comments->commentsRepository;
 		$this->application = $application;
@@ -47,31 +47,31 @@ class CommentsSubscriber implements EventSubscriber
 	public function getSubscribedEvents()
 	{
 		return array(
-			Events::onCreate,
-			Events::onLoad,
-			Events::onSave,
-			Events::onRemove,
-			Events::onRender
+			Events::onContentExtensionCreate,
+			Events::onContentExtensionLoad,
+			Events::onContentExtensionSave,
+			Events::onContentExtensionRemove,
+			Events::onContentExtensionRender
 		);
 	}
 
 
 
-	public function onSave(\Venne\ContentExtension\EventArgs $args)
+	public function onContentExtensionSave(\Venne\ContentExtension\EventArgs $args)
 	{
 		$form = $args->form;
 		$page = $args->page;
 
 		$values = $form->getContentExtensionContainer("comments")->getValues();
-		if($values["use"]){
-			if(!$form->entity->id || ($form->entity->id && !$this->repository->findOneByPage($form->entity->id))){
+		if ($values["use"]) {
+			if (!$form->entity->id || ($form->entity->id && !$this->repository->findOneByPage($form->entity->id))) {
 				$entity = $this->repository->createNew(array($form->entity->page));
 				$this->repository->save($entity);
 			}
-		}else{
-			if($form->entity->id){
+		} else {
+			if ($form->entity->id) {
 				$entity = $this->repository->findOneByPage($form->entity->id);
-				if($entity){
+				if ($entity) {
 					$this->repository->delete($entity);
 				}
 			}
@@ -80,7 +80,7 @@ class CommentsSubscriber implements EventSubscriber
 
 
 
-	public function onCreate(\Venne\ContentExtension\EventArgs $args)
+	public function onContentExtensionCreate(\Venne\ContentExtension\EventArgs $args)
 	{
 		$form = $args->form;
 
@@ -92,14 +92,14 @@ class CommentsSubscriber implements EventSubscriber
 
 
 
-	public function onLoad(\Venne\ContentExtension\EventArgs $args)
+	public function onContentExtensionLoad(\Venne\ContentExtension\EventArgs $args)
 	{
 		$form = $args->form;
 		$page = $args->page;
 
-		if($form->entity->id){
+		if ($form->entity->id) {
 			$entity = $this->repository->findOneByPage($form->entity->id);
-			if($entity){
+			if ($entity) {
 				$container = $form->getContentExtensionContainer("comments");
 				$container["use"]->setValue(true);
 			}
@@ -107,15 +107,12 @@ class CommentsSubscriber implements EventSubscriber
 	}
 
 
-	public function onRender()
+
+	public function onContentExtensionRender()
 	{
-		/** @var $presenter \Nette\Application\UI\Presenter */
 		$presenter = $this->application->getPresenter();
-
 		$component = new \Venne\Elements\CommentsControl();
-
-		$presenter->addComponent($component,"contentExtension_comments");
-
+		$presenter->addComponent($component, "contentExtension_comments");
 		$component->render();
 	}
 
